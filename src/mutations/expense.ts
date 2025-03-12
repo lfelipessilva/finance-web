@@ -1,5 +1,6 @@
 import { api } from "@/api/axios";
 import { UpdateExpense } from "@/app/table/update-drawer";
+import { Expense } from "@/entity/expense";
 import { useMutation } from "@tanstack/react-query";
 
 export const useUpdateExpenseMutation = () =>
@@ -15,6 +16,19 @@ export const useUpdateExpenseMutation = () =>
         method: "put",
         url: `/expenses/${id}`,
         data: expense,
+      });
+
+      return response;
+    },
+  });
+
+export const useBatchCreateExpenses = () =>
+  useMutation({
+    mutationFn: async ({ expenses }: { expenses: Omit<Expense, "id">[] }) => {
+      const response = await api({
+        method: "post",
+        url: `/expenses/batch`,
+        data: expenses,
       });
 
       return response;

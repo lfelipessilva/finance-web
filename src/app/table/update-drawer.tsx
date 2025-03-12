@@ -71,7 +71,6 @@ export function UpdateDrawer({ initialValues }: { initialValues: Expense }) {
   const { mutate } = useUpdateExpenseMutation();
 
   function onSubmit(data: UpdateExpense) {
-    console.log(data)
     mutate(
       { expense: data, id: initialValues.id },
       {

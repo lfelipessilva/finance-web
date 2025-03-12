@@ -14,9 +14,25 @@ import { Input } from "@/components/ui/input";
 import { processCSVData } from "@/lib/importCsv";
 import { Expense } from "@/entity/expense";
 import { ImportTable } from "@/components/tables/import-table";
+import { useBatchCreateExpenses } from "@/mutations/expense";
+import { useQueryClient } from "@tanstack/react-query";
+import { getExpensesQueryKey } from "@/queries/expenses";
 
 export function ImportDialog() {
   const [expenses, setExpenses] = useState<Omit<Expense, "id">[]>([]);
+  const { mutate } = useBatchCreateExpenses();
+  const queryClient = useQueryClient();
+
+  const handleSubmit = () => {
+    mutate(
+      { expenses },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: [getExpensesQueryKey] });
+        },
+      }
+    );
+  };
 
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -67,7 +83,7 @@ export function ImportDialog() {
               </p>
               <ImportTable data={expenses} />
               <div className="mt-4 flex justify-end">
-                <Button onClick={() => console.log("Save expenses:", expenses)}>
+                <Button onClick={() => handleSubmit()}>
                   Confirmar Importação
                 </Button>
               </div>

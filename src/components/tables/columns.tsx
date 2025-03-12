@@ -24,7 +24,7 @@ export const columns: ColumnDef<Omit<Expense, "id">>[] = [
   },
   {
     accessorKey: "timestamp",
-    header: "Horário",
-    cell: ({ row }) => format(row.original.timestamp, "dd/MM/yyyy HH:ss"),
+    header: "Data",
+    cell: ({ row }) => format(row.original.timestamp, "dd/MM/yyyy"),
   },
 ];

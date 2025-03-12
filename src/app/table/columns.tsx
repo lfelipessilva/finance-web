@@ -25,8 +25,8 @@ export const columns: ColumnDef<Expense>[] = [
   },
   {
     accessorKey: "timestamp",
-    header: "Horário",
-    cell: ({ row }) => format(row.original.timestamp, "dd/MM/yyyy HH:ss"),
+    header: "Data",
+    cell: ({ row }) => format(row.original.timestamp, "dd/MM/yyyy"),
   },
   {
     header: "Ações",
