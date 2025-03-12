@@ -1,6 +1,9 @@
+"use client";
+
 import { Expense } from "@/entity/expense";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
+import { UpdateDrawer } from "./update-drawer";
 
 export const columns: ColumnDef<Expense>[] = [
   {
@@ -24,5 +27,9 @@ export const columns: ColumnDef<Expense>[] = [
     accessorKey: "timestamp",
     header: "Horário",
     cell: ({ row }) => format(row.original.timestamp, "dd/MM/yyyy HH:ss"),
+  },
+  {
+    header: "Ações",
+    cell: ({ row }) => <UpdateDrawer initialValues={row.original} />,
   },
 ];

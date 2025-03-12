@@ -10,7 +10,7 @@ export default function Page() {
   void queryClient.prefetchQuery(expenseOptions);
 
   return (
-    <main>
+    <main className="w-10/12 max-w-[1440px] m-auto h-dvh py-4">
       <HydrationBoundary state={dehydrate(queryClient)}>
         <DataTable />
       </HydrationBoundary>
