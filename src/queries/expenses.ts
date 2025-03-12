@@ -1,10 +1,13 @@
+import { api } from "@/api/axios";
 import { queryOptions } from "@tanstack/react-query";
 
-export const expenseOptions = queryOptions({
-  queryKey: ["expenses"],
-  queryFn: async () => {
-    const response = await fetch(`${process.env.API_ROUTE}/expenses`);
+export const getExpensesQueryKey = "expenses";
 
-    return response.json();
+export const expenseOptions = queryOptions({
+  queryKey: [getExpensesQueryKey],
+  queryFn: async () => {
+    const response = await api.get("/expenses");
+    return response.data;
   },
+  retry: 2,
 });

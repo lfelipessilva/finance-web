@@ -37,6 +37,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
+import { useUpdateExpenseMutation } from "@/mutations/expense";
+import { useQueryClient } from "@tanstack/react-query";
+import { getExpensesQueryKey } from "@/queries/expenses";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -56,14 +59,27 @@ const formSchema = z.object({
   }),
 });
 
+export type UpdateExpense = z.infer<typeof formSchema>;
+
 export function UpdateDrawer({ initialValues }: { initialValues: Expense }) {
-  const form = useForm<z.infer<typeof formSchema>>({
+  const queryClient = useQueryClient();
+  const form = useForm<UpdateExpense>({
     resolver: zodResolver(formSchema),
     defaultValues: initialValues,
   });
 
-  function onSubmit(data: Expense) {
-    console.log("Form Submitted:", data);
+  const { mutate } = useUpdateExpenseMutation();
+
+  function onSubmit(data: UpdateExpense) {
+    console.log(data)
+    mutate(
+      { expense: data, id: initialValues.id },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: [getExpensesQueryKey] });
+        },
+      }
+    );
   }
 
   return (
@@ -106,7 +122,14 @@ export function UpdateDrawer({ initialValues }: { initialValues: Expense }) {
                   <FormItem>
                     <FormLabel>Valor</FormLabel>
                     <FormControl>
-                      <Input placeholder="value" {...field} />
+                      <Input
+                        placeholder="value"
+                        {...field}
+                        type="number"
+                        onChange={(event) =>
+                          field.onChange(Number(event.target.value))
+                        }
+                      />
                     </FormControl>
                     <FormDescription>Valor do seu gasto</FormDescription>
                     <FormMessage />
