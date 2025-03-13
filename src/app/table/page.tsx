@@ -8,7 +8,7 @@ import { ImportDialog } from "./import-dialog";
 export default function Page() {
   const queryClient = getQueryClient();
 
-  void queryClient.prefetchQuery(expenseOptions);
+  void queryClient.prefetchQuery(expenseOptions());
 
   return (
     <main className="w-10/12 max-w-[1440px] m-auto my-8">

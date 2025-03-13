@@ -38,19 +38,21 @@ import {
 } from "@/components/ui/select";
 
 export function DataTable() {
-  const { data } = useSuspenseQuery(expenseOptions);
-  const [rowSelection, setRowSelection] = React.useState({});
   const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: 0,
     pageSize: 50,
   });
+  const [rowSelection, setRowSelection] = React.useState({});
+
+  const { data: expenses } = useSuspenseQuery(expenseOptions(pagination));
 
   const table = useReactTable({
-    data,
+    data: expenses.data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     enableRowSelection: true,
+    manualPagination: true,
     onRowSelectionChange: setRowSelection,
     onPaginationChange: setPagination,
     state: {
