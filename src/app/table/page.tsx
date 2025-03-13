@@ -11,7 +11,8 @@ export default function Page() {
   void queryClient.prefetchQuery(expenseOptions);
 
   return (
-    <main className="w-10/12 max-w-[1440px] m-auto h-dvh py-4">
+    <main className="w-10/12 max-w-[1440px] m-auto my-8">
+      <h1 className="text-[32px] font-semibold">Finance</h1>
       <HydrationBoundary state={dehydrate(queryClient)}>
         <ImportDialog />
         <DataTable />
