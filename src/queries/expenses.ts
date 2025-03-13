@@ -7,6 +7,7 @@ export const expenseOptions = queryOptions({
   queryKey: [getExpensesQueryKey],
   queryFn: async () => {
     const response = await api.get("/expenses");
+    console.log(response);
     return response.data;
   },
   retry: 2,
