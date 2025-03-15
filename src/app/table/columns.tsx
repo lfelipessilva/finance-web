@@ -5,6 +5,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { UpdateDrawer } from "./update-drawer";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
 
 export const columns: ColumnDef<Expense>[] = [
   {
@@ -27,8 +28,30 @@ export const columns: ColumnDef<Expense>[] = [
     header: "Nome",
   },
   {
+    accessorKey: "description",
+    header: "Descrição",
+  },
+  {
     accessorKey: "category",
     header: "Categoria",
+    cell: ({ row }) => (
+      <Badge style={{ backgroundColor: row.original.category.color }}>
+        {row.original.category.name}
+      </Badge>
+    ),
+  },
+  {
+    accessorKey: "tags",
+    header: "Tags",
+    cell: ({ row }) => (
+      <div className="flex gap-1">
+        {row.original.tags.map((tag) => (
+          <Badge key={tag.id} style={{ backgroundColor: tag.color }}>
+            {tag.name}
+          </Badge>
+        ))}
+      </div>
+    ),
   },
   {
     accessorKey: "value",
@@ -43,6 +66,14 @@ export const columns: ColumnDef<Expense>[] = [
     accessorKey: "timestamp",
     header: "Data",
     cell: ({ row }) => format(row.original.timestamp, "dd/MM/yyyy"),
+  },
+  {
+    accessorKey: "card",
+    header: "Cartão",
+  },
+  {
+    accessorKey: "bank",
+    header: "Banco",
   },
   {
     header: "Ações",
