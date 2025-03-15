@@ -36,13 +36,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useTableState } from "../state/table-state";
 
 export function DataTable() {
   const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: 0,
     pageSize: 50,
   });
-  const [rowSelection, setRowSelection] = React.useState({});
+  const { rowSelection, setRowSelection } = useTableState((state) => state);
 
   const { data: expenses } = useSuspenseQuery(expenseOptions(pagination));
 
