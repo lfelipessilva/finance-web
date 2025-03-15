@@ -40,23 +40,26 @@ import { Calendar } from "@/components/ui/calendar";
 import { useUpdateExpenseMutation } from "@/mutations/expense";
 import { useQueryClient } from "@tanstack/react-query";
 import { getExpensesQueryKey } from "@/queries/expenses";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const formSchema = z.object({
   name: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
+    message: "Nome deve ser definido",
   }),
-
   value: z.number().min(2, {
-    message: "Username must be at least 2 characters.",
+    message: "Valor deve ser definido",
   }),
-
-  category: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
-  }),
-
   timestamp: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
+    message: "Data deve ser definida",
   }),
+  tagIds: z.array(z.number()),
+  categoryId: z.number(),
 });
 
 export type UpdateExpense = z.infer<typeof formSchema>;
@@ -65,7 +68,7 @@ export function UpdateDrawer({ initialValues }: { initialValues: Expense }) {
   const queryClient = useQueryClient();
   const form = useForm<UpdateExpense>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialValues,
+    defaultValues: { ...initialValues, categoryId: initialValues.category_id },
   });
 
   const { mutate } = useUpdateExpenseMutation();
@@ -138,12 +141,24 @@ export function UpdateDrawer({ initialValues }: { initialValues: Expense }) {
 
               <FormField
                 control={form.control}
-                name="category"
+                name="categoryId"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Categoria</FormLabel>
                     <FormControl>
-                      <Input placeholder="R$ 00,00" {...field} />
+                      <Select
+                        value={String(field.value)}
+                        onValueChange={(value) => field.onChange(Number(value))}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione a categoria" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="1">Light</SelectItem>
+                          <SelectItem value="2">Dark</SelectItem>
+                          <SelectItem value="3">System</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </FormControl>
                     <FormDescription>
                       Essa é a categoria do seu gasto

@@ -8,7 +8,7 @@ export interface Expense {
   bank: string;
   card: string;
   value: number;
-  category_id: string;
+  category_id: number;
   category: Category;
   tags: Tag[];
   timestamp: string;
