@@ -4,7 +4,6 @@ import { Expense } from "@/entity/expense";
 const POSSIBLE_COLUMN_NAMES = {
   timestamp: ["data", "date"],
   name: ["lançamento", "title", "descrição"],
-  category: ["categoria", "category"],
   value: ["valor", "amount", "value"],
 } as const;
 
@@ -55,9 +54,6 @@ export const parseTransactionRow = (
         expense.timestamp = isBrazilianDate
           ? convertBrazilianDate(row[index])
           : format(new Date(row[index]), "yyyy-MM-dd'T'HH:mm:ss'Z'");
-        break;
-      case "category":
-        expense.category = row[index];
         break;
       case "value":
         expense.value = Number(row[index].replace(/\D/g, ""));

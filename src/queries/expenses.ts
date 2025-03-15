@@ -15,11 +15,26 @@ export const expenseOptions = (pagination?: PaginationState) => {
   return queryOptions({
     queryKey: [getExpensesQueryKey, params.page, params.page_size],
     queryFn: async () => {
-      const response = await api.get<DefaultGetRequest<Expense>>("/expenses", {
-        params,
-      });
+      try {
+        const response = await api.get<DefaultGetRequest<Expense>>(
+          "/expenses",
+          {
+            params,
+          }
+        );
 
-      return response.data;
+        return response.data;
+      } catch (error) {
+        console.error(error);
+        return {
+          data: [],
+          summary: {
+            page: 1,
+            page_size: 50,
+            total: 0,
+          },
+        };
+      }
     },
     retry: 2,
   });
