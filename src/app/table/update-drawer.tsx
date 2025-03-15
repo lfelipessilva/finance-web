@@ -49,10 +49,11 @@ import {
 } from "@/components/ui/select";
 
 const formSchema = z.object({
-  name: z.string().min(2, {
-    message: "Nome deve ser definido",
+  name: z.string({
+    required_error: "Nome deve ser definido.",
   }),
-  value: z.number().min(2, {
+  description: z.string(),
+  value: z.number().min(0, {
     message: "Valor deve ser definido",
   }),
   timestamp: z.string().min(2, {
@@ -119,6 +120,21 @@ export function UpdateDrawer({ initialValues }: { initialValues: Expense }) {
 
               <FormField
                 control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Descrição</FormLabel>
+                    <FormControl>
+                      <Input placeholder="description" {...field} />
+                    </FormControl>
+                    <FormDescription>Descrição do seu gasto</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
                 name="value"
                 render={({ field }) => (
                   <FormItem>
@@ -150,7 +166,7 @@ export function UpdateDrawer({ initialValues }: { initialValues: Expense }) {
                         value={String(field.value)}
                         onValueChange={(value) => field.onChange(Number(value))}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="w-full">
                           <SelectValue placeholder="Selecione a categoria" />
                         </SelectTrigger>
                         <SelectContent>
@@ -187,7 +203,7 @@ export function UpdateDrawer({ initialValues }: { initialValues: Expense }) {
                             {field.value ? (
                               format(field.value, "PPP", { locale: ptBR })
                             ) : (
-                              <span>Pick a date</span>
+                              <span>Seleciona uma data</span>
                             )}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
