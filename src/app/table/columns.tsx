@@ -6,6 +6,8 @@ import { format } from "date-fns";
 import { UpdateDrawer } from "./update-drawer";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ArrowDown, ArrowUp } from "lucide-react";
 
 export const columns: ColumnDef<Expense>[] = [
   {
@@ -55,7 +57,18 @@ export const columns: ColumnDef<Expense>[] = [
   },
   {
     accessorKey: "value",
-    header: "Valor",
+    enableSorting: true,
+    header: ({ column }) => (
+      <Button onClick={() => column.toggleSorting()} variant={"ghost"}>
+        Valor
+        <div className="flex gap-0">
+          <ArrowDown
+            color={column.getIsSorted() === "desc" ? "black" : "gray"}
+          />
+          <ArrowUp color={column.getIsSorted() === "asc" ? "black" : "gray"} />
+        </div>
+      </Button>
+    ),
     cell: ({ row }) =>
       (row.original.value / 100).toLocaleString("pt-BR", {
         style: "currency",
@@ -64,7 +77,18 @@ export const columns: ColumnDef<Expense>[] = [
   },
   {
     accessorKey: "timestamp",
-    header: "Data",
+    enableSorting: true,
+    header: ({ column }) => (
+      <Button onClick={() => column.toggleSorting()} variant={"ghost"}>
+        Data
+        <div className="flex gap-0">
+          <ArrowDown
+            color={column.getIsSorted() === "desc" ? "black" : "gray"}
+          />
+          <ArrowUp color={column.getIsSorted() === "asc" ? "black" : "gray"} />
+        </div>
+      </Button>
+    ),
     cell: ({ row }) => format(row.original.timestamp, "dd/MM/yyyy"),
   },
   {

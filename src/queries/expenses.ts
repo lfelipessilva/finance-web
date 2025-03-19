@@ -2,18 +2,23 @@ import { api } from "@/api/axios";
 import { queryOptions } from "@tanstack/react-query";
 import { DefaultGetRequest } from "./type";
 import { Expense } from "@/entity/expense";
-import { PaginationState } from "@tanstack/react-table";
+import { PaginationState, SortingState } from "@tanstack/react-table";
 
 export const getExpensesQueryKey = "expenses";
 
-export const expenseOptions = (pagination?: PaginationState) => {
+export const expenseOptions = (
+  pagination?: PaginationState,
+  sorting?: SortingState
+) => {
   const params = {
     page_size: pagination?.pageSize ?? "50",
     page: pagination?.pageIndex ? pagination.pageIndex + 1 : "1",
+    order_by: sorting ? sorting[0]?.id : undefined,
+    order_direction: sorting ? (sorting[0]?.desc ? "desc" : "asc") : undefined,
   };
 
   return queryOptions({
-    queryKey: [getExpensesQueryKey, params.page, params.page_size],
+    queryKey: [getExpensesQueryKey, params],
     queryFn: async () => {
       try {
         const response = await api.get<DefaultGetRequest<Expense>>(

@@ -109,9 +109,9 @@ export const Floating = () => {
               <FormItem>
                 <FormControl>
                   <Input
-                    placeholder="nome"
+                    placeholder="Nome"
                     {...field}
-                    className="bg-primary text-background"
+                    className="bg-primary text-background border-0"
                   />
                 </FormControl>
               </FormItem>
@@ -125,9 +125,9 @@ export const Floating = () => {
               <FormItem>
                 <FormControl>
                   <Input
-                    placeholder="description"
+                    placeholder="Descrição"
                     {...field}
-                    className="bg-primary text-background"
+                    className="bg-primary text-background border-0"
                   />
                 </FormControl>
               </FormItem>
@@ -141,13 +141,13 @@ export const Floating = () => {
               <FormItem>
                 <FormControl>
                   <Input
-                    placeholder="value"
+                    placeholder="Valor"
                     {...field}
                     type="number"
                     onChange={(event) =>
                       field.onChange(Number(event.target.value))
                     }
-                    className="bg-primary text-background"
+                    className="bg-primary text-background border-0"
                   />
                 </FormControl>
               </FormItem>
@@ -164,7 +164,7 @@ export const Floating = () => {
                     value={String(field.value)}
                     onValueChange={(value) => field.onChange(Number(value))}
                   >
-                    <SelectTrigger className=" min-w-32 w-full bg-primary text-background">
+                    <SelectTrigger className=" min-w-32 w-full bg-primary text-background border-0">
                       <SelectValue placeholder="Selecione a categoria" />
                     </SelectTrigger>
                     <SelectContent>
@@ -189,8 +189,7 @@ export const Floating = () => {
                       <Button
                         variant={"outline"}
                         className={cn(
-                          "pl-3 text-left font-normal",
-                          "bg-primary text-background text-white",
+                          "pl-3 text-left font-normal hover:bg-primary hover:text-background bg-primary text-background border-0",
                           !field.value && "text-muted-foreground"
                         )}
                       >
@@ -210,7 +209,7 @@ export const Floating = () => {
                         !field.value ? undefined : new Date(field.value)
                       }
                       onSelect={(date: Date | undefined) => {
-                        if (!date) field.onChange("");
+                        if (!date) field.onChange(undefined);
                         field.onChange(
                           format(endOfDay(date!), "yyyy-MM-dd'T'HH:mm:ss'Z'")
                         );

@@ -1,13 +1,15 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { expenseOptions } from "@/queries/expenses";
 import {
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
   PaginationState,
+  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import {
@@ -39,27 +41,35 @@ import {
 import { useTableState } from "../state/table-state";
 
 export function DataTable() {
+  const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: 0,
     pageSize: 50,
   });
   const { rowSelection, setRowSelection } = useTableState((state) => state);
 
-  const { data: expenses } = useSuspenseQuery(expenseOptions(pagination));
+  const { data: expenses } = useSuspenseQuery(
+    expenseOptions(pagination, sorting)
+  );
 
   const table = useReactTable({
     data: expenses.data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     enableRowSelection: true,
     manualPagination: true,
+    enableSorting: true,
+    manualSorting: true,
     getRowId: (row) => String(row.id),
     onRowSelectionChange: setRowSelection,
     onPaginationChange: setPagination,
+    onSortingChange: setSorting,
     state: {
       rowSelection,
       pagination,
+      sorting,
     },
   });
 
