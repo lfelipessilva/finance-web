@@ -31,34 +31,69 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { ptBR } from "date-fns/locale";
 import { Separator } from "@/components/ui/separator";
+import {
+  useBatchDeleteMutation,
+  useBatchUpdateMutation,
+} from "@/mutations/expense";
+import { getExpensesQueryKey } from "@/queries/expenses";
+import { useQueryClient } from "@tanstack/react-query";
 
 const formSchema = z.object({
-  name: z.string(),
-  description: z.string(),
-  value: z.number().min(0, {}),
-  timestamp: z.string(),
-  tagIds: z.array(z.number()),
-  categoryId: z.number(),
+  name: z.string().optional(),
+  description: z.string().optional(),
+  value: z.number().min(0, {}).optional(),
+  timestamp: z.string().optional(),
+  tagIds: z.array(z.number()).optional(),
+  categoryId: z.number().optional(),
 });
 
 export type UpdateExpense = z.infer<typeof formSchema>;
 
 export const Floating = () => {
-  const { rowSelection } = useTableState((state) => state);
+  const { rowSelection, clearSelection } = useTableState((state) => state);
+  const queryClient = useQueryClient();
 
   const form = useForm<UpdateExpense>({
     resolver: zodResolver(formSchema),
   });
 
-  if (!Object.values(rowSelection)[0]) return null;
+  const { mutate: batchUpdate } = useBatchUpdateMutation();
+  const { mutate: batchDelete } = useBatchDeleteMutation();
 
-  const onSubmit = (data: UpdateExpense) => {
-    console.log(data);
+  const onSubmit = (values: UpdateExpense) => {
+    batchUpdate(
+      {
+        ids: Object.keys(rowSelection).map((id) => id),
+        values,
+      },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: [getExpensesQueryKey] });
+          clearSelection();
+        },
+      }
+    );
   };
+
+  const handleClickDeleteButton = () => {
+    batchDelete(
+      {
+        ids: Object.keys(rowSelection).map((id) => id),
+      },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: [getExpensesQueryKey] });
+          clearSelection();
+        },
+      }
+    );
+  };
+
+  if (!Object.values(rowSelection)[0]) return null;
 
   return (
     <section className="sticky bottom-12 bg-foreground h-12 px-4 py-2 z-10 flex items-center justify-center rounded-sm gap-4 w-fit mx-auto">
-      <Button>
+      <Button onClick={() => handleClickDeleteButton()}>
         <Trash />
         Excluir
       </Button>
@@ -171,7 +206,9 @@ export const Floating = () => {
                   <PopoverContent className="w-auto p-0" align="start">
                     <Calendar
                       mode="single"
-                      selected={new Date(field.value)}
+                      selected={
+                        !field.value ? undefined : new Date(field.value)
+                      }
                       onSelect={(date: Date | undefined) => {
                         if (!date) field.onChange("");
                         field.onChange(

@@ -54,6 +54,7 @@ export function DataTable() {
     getPaginationRowModel: getPaginationRowModel(),
     enableRowSelection: true,
     manualPagination: true,
+    getRowId: (row) => String(row.id),
     onRowSelectionChange: setRowSelection,
     onPaginationChange: setPagination,
     state: {

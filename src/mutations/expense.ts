@@ -34,3 +34,40 @@ export const useBatchCreateExpenses = () =>
       return response;
     },
   });
+
+export const useBatchUpdateMutation = () =>
+  useMutation({
+    mutationFn: async ({
+      values,
+      ids,
+    }: {
+      values: Partial<Omit<Expense, "id">>;
+      ids: string[];
+    }) => {
+      const response = await api({
+        method: "put",
+        url: `/expenses/batch`,
+        data: {
+          ids,
+          values,
+        },
+      });
+
+      return response;
+    },
+  });
+
+export const useBatchDeleteMutation = () =>
+  useMutation({
+    mutationFn: async ({ ids }: { ids: string[] }) => {
+      const response = await api({
+        method: "delete",
+        url: `/expenses/batch`,
+        data: {
+          ids,
+        },
+      });
+
+      return response;
+    },
+  });
