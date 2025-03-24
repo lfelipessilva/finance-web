@@ -9,7 +9,7 @@ export const useUpdateExpenseMutation = () =>
       expense,
       id,
     }: {
-      expense: UpdateExpense;
+      expense: Partial<UpdateExpense>;
       id: number;
     }) => {
       const response = await api({

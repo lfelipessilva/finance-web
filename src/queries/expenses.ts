@@ -1,6 +1,6 @@
 import { api } from "@/api/axios";
 import { queryOptions } from "@tanstack/react-query";
-import { DefaultGetRequest } from "./type";
+import { DefaultPaginatedGetRequest } from "./type";
 import { Expense } from "@/entity/expense";
 import { PaginationState, SortingState } from "@tanstack/react-table";
 
@@ -21,7 +21,7 @@ export const expenseOptions = (
     queryKey: [getExpensesQueryKey, params],
     queryFn: async () => {
       try {
-        const response = await api.get<DefaultGetRequest<Expense>>(
+        const response = await api.get<DefaultPaginatedGetRequest<Expense>>(
           "/expenses",
           {
             params,

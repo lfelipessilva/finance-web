@@ -70,6 +70,7 @@ export const Floating = () => {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: [getExpensesQueryKey] });
           clearSelection();
+          form.reset();
         },
       }
     );
@@ -84,6 +85,7 @@ export const Floating = () => {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: [getExpensesQueryKey] });
           clearSelection();
+          form.reset();
         },
       }
     );
