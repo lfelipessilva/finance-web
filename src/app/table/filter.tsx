@@ -16,6 +16,9 @@ import { useDebounce } from "@/hooks/use-debounde";
 import { monthOptions } from "@/lib/contants";
 import { getMonth } from "date-fns";
 import { getStartAndEndOfMonth } from "@/lib/utils";
+import { categoryOptions } from "@/queries/categories";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { CategoryBadge } from "@/components/ui/category-badge";
 
 export interface FilterProps {
   filters: ExpenseFilterState;
@@ -26,8 +29,46 @@ const Filter = () => {
   return (
     <section className="flex gap-4">
       <NameFilter />
+      <CategoryFilter />
       <MonthFilter />
     </section>
+  );
+};
+
+const CategoryFilter = () => {
+  const searchParams = useSearchParams();
+  const { data: categories } = useSuspenseQuery(categoryOptions());
+  const [category, setCategory] = useState<string | undefined>(
+    searchParams.get("category") || undefined
+  );
+
+  useEffect(() => {
+    updateFilter({
+      category: category as string,
+    });
+  }, [category]);
+
+  return (
+    <Select
+      value={category}
+      onValueChange={(value) => {
+        setCategory(value);
+      }}
+      defaultValue={undefined}
+    >
+      <SelectTrigger className="w-full min-w-20">
+        <SelectValue placeholder="Selecione a categoria" />
+      </SelectTrigger>
+      <SelectContent>
+        {categories.map((category) => (
+          <SelectItem value={String(category.id)} key={category.id}>
+            <CategoryBadge category={category} />
+          </SelectItem>
+        ))}
+        {/* @ts-expect-error @ts-ignore */}
+        <SelectItem value={null}>Sem categoria</SelectItem>
+      </SelectContent>
+    </Select>
   );
 };
 

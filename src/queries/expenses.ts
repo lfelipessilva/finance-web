@@ -8,6 +8,7 @@ export interface ExpenseFilterState {
   timestamp_start?: string;
   timestamp_end?: string;
   name?: string;
+  category?: string;
 }
 
 export const getExpensesQueryKey = "expenses";
@@ -25,6 +26,7 @@ export const expenseOptions = (
     timestamp_start: filters?.timestamp_start ?? undefined,
     timestamp_end: filters?.timestamp_end ?? undefined,
     name: filters?.name ?? undefined,
+    category: filters?.category ?? undefined,
   };
 
   return queryOptions({
