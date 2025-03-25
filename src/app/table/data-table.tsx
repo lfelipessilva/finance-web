@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { expenseOptions } from "@/queries/expenses";
+import { ExpenseFilterState, expenseOptions } from "@/queries/expenses";
 import {
   flexRender,
   getCoreRowModel,
@@ -39,9 +39,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useTableState } from "../state/table-state";
+import { Filter } from "./filter";
+import { cn } from "@/lib/utils";
 
 export function DataTable() {
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: "timestamp", desc: true },
+  ]);
+  const [filters, setFilters] = useState<ExpenseFilterState>({});
   const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: 0,
     pageSize: 50,
@@ -49,7 +54,7 @@ export function DataTable() {
   const { rowSelection, setRowSelection } = useTableState((state) => state);
 
   const { data: expenses } = useSuspenseQuery(
-    expenseOptions(pagination, sorting)
+    expenseOptions(pagination, sorting, filters)
   );
 
   const table = useReactTable({
@@ -66,6 +71,7 @@ export function DataTable() {
     onRowSelectionChange: setRowSelection,
     onPaginationChange: setPagination,
     onSortingChange: setSorting,
+    rowCount: expenses.summary.total,
     state: {
       rowSelection,
       pagination,
@@ -75,6 +81,7 @@ export function DataTable() {
 
   return (
     <div className="flex flex-col gap-4 py-4">
+      <Filter filters={filters} setFilters={setFilters} />
       <div className="rounded-md border">
         <Table className="w-full">
           <TableHeader>
@@ -125,41 +132,58 @@ export function DataTable() {
           </TableBody>
         </Table>
       </div>
-      <div className="flex self-end">
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious onClick={() => table.previousPage()} />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink>
-                {table.getState().pagination.pageIndex + 1}
-              </PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationNext onClick={() => table.nextPage()} />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-        <Select
-          value={table.getState().pagination.pageSize.toString()}
-          onValueChange={(value) => {
-            table.setPageSize(Number(value));
-          }}
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Selecione" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Número por página</SelectLabel>
-              <SelectItem value="10">10</SelectItem>
-              <SelectItem value="25">25</SelectItem>
-              <SelectItem value="50">50</SelectItem>
-              <SelectItem value="100">100</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+      <div className="flex justify-between">
+        <p className="text-sm">
+          {Object.keys(rowSelection).length} de{" "}
+          {expenses.summary.total} registros selecionados
+        </p>
+        <div className="flex gap-2">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() => table.previousPage()}
+                  className={cn(
+                    !table.getCanPreviousPage() &&
+                      "cursor-auto pointer-events-none opacity-50"
+                  )}
+                />
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationLink>
+                  {table.getState().pagination.pageIndex + 1}
+                </PaginationLink>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() => table.nextPage()}
+                  className={cn(
+                    !table.getCanNextPage() && "pointer-events-none opacity-50"
+                  )}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+          <Select
+            value={table.getState().pagination.pageSize.toString()}
+            onValueChange={(value) => {
+              table.setPageSize(Number(value));
+            }}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Selecione" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Número por página</SelectLabel>
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="25">25</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+                <SelectItem value="100">100</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
     </div>
   );

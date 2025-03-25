@@ -6,7 +6,7 @@ import { format } from "date-fns";
 import { UpdateDrawer } from "./update-drawer";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { ArrowDown, ArrowUp, X } from "lucide-react";
+import { ArrowDown, ArrowUp } from "lucide-react";
 import { TagPopover } from "@/components/tag-popover";
 import { CategoryBadge } from "@/components/ui/category-badge";
 
