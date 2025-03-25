@@ -13,6 +13,7 @@ import { getExpensesQueryKey } from "@/queries/expenses";
 import { Expense } from "@/entity/expense";
 import { Tag } from "@/entity/tag";
 import { CircularProgress } from "./ui/circular-progress";
+import { TagBadge } from "./ui/tag-badge";
 
 interface TagPopoverProps {
   currentTags: Tag[];
@@ -92,14 +93,3 @@ export function TagPopover({ currentTags, id }: TagPopoverProps) {
     </div>
   );
 }
-
-const TagBadge = ({ tag, onClick }: { tag: Tag; onClick: () => void }) => (
-  <button
-    type="button"
-    style={{ backgroundColor: tag.color }}
-    className="text-xs flex gap-1 h-fit rounded-sm py-0.5 px-1 group transition-all cursor-pointer hover:opacity-80"
-    onClick={onClick}
-  >
-    {tag.name}
-  </button>
-);

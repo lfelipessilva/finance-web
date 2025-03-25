@@ -6,12 +6,14 @@ import { DataTable } from "./data-table";
 import { ImportDialog } from "./import-dialog";
 import { Floating } from "./floating";
 import { tagOptions } from "@/queries/tags";
+import { categoryOptions } from "@/queries/categories";
 
 export default function Page() {
   const queryClient = getQueryClient();
 
   void queryClient.prefetchQuery(expenseOptions());
   void queryClient.prefetchQuery(tagOptions());
+  void queryClient.prefetchQuery(categoryOptions());
 
   return (
     <main className="w-10/12 max-w-[1440px] m-auto my-8">

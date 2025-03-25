@@ -1,36 +1,43 @@
 "use client";
 
 import { Expense } from "@/entity/expense";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, Row, Table } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { UpdateDrawer } from "./update-drawer";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowDown, ArrowUp, X } from "lucide-react";
 import { TagPopover } from "@/components/tag-popover";
-import IconRenderer from "@/components/ui/icon";
+import { CategoryBadge } from "@/components/ui/category-badge";
+
+let lastSelectedId = "";
 
 export const columns: ColumnDef<Expense>[] = [
   {
     id: "select",
     header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
+      <div className="flex items-center justify-center">
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      </div>
     ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
+    cell: ({ row, table }) => {
+      return (
+        <div className="flex items-center justify-center">
+          <Checkbox
+            checked={row.getIsSelected()}
+            onClick={(e) => handleShiftSelection(e, row, table)}
+            onCheckedChange={(value) => row.toggleSelected(!!value)}
+          />
+        </div>
+      );
+    },
     enableSorting: false,
     enableHiding: false,
   },
@@ -70,15 +77,7 @@ export const columns: ColumnDef<Expense>[] = [
     cell: ({ row }) => {
       if (!row.original.category.name) return null;
 
-      return (
-        <div className="flex gap-2">
-          <IconRenderer
-            iconName={row.original.category.icon}
-            background={row.original.category.color}
-          />
-          {row.original.category.name}
-        </div>
-      );
+      return <CategoryBadge category={row.original.category} />;
     },
   },
   {
@@ -115,3 +114,39 @@ export const columns: ColumnDef<Expense>[] = [
     cell: ({ row }) => <UpdateDrawer initialValues={row.original} />,
   },
 ];
+
+const handleShiftSelection = (
+  event: React.MouseEvent,
+  targetRow: Row<Expense>,
+  table: Table<Expense>
+) => {
+  if (!event.shiftKey || !lastSelectedId) {
+    lastSelectedId = targetRow.id;
+    return;
+  }
+
+  const { rows, rowsById } = table.getRowModel();
+  const previousSelectedState =
+    rowsById[lastSelectedId]?.getIsSelected() ?? false;
+
+  const selectionRange = getRowRange(rows, targetRow.id, lastSelectedId);
+  selectionRange.forEach((row) => row.toggleSelected(previousSelectedState));
+
+  lastSelectedId = targetRow.id;
+};
+
+function getRowRange<T>(rows: Array<Row<T>>, idA: string, idB: string) {
+  const startIndex = rows.findIndex((row) => row.id === idA || row.id === idB);
+
+  if (startIndex === -1) return [];
+
+  const endMatch = rows
+    .slice(startIndex + 1)
+    .find((row) => row.id === idA || row.id === idB);
+
+  const endIndex = endMatch
+    ? rows.indexOf(endMatch, startIndex + 1)
+    : rows.length - 1;
+
+  return rows.slice(startIndex, endIndex + 1);
+}

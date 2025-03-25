@@ -1,7 +1,7 @@
 "use client";
 
 import { ptBR } from "date-fns/locale";
-import * as React from "react";
+import React, { useState } from "react";
 import { CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -38,7 +38,7 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { useUpdateExpenseMutation } from "@/mutations/expense";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { getExpensesQueryKey } from "@/queries/expenses";
 import {
   Select,
@@ -47,6 +47,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { categoryOptions } from "@/queries/categories";
+import { CategoryBadge } from "@/components/ui/category-badge";
 
 const formSchema = z.object({
   name: z.string({
@@ -59,7 +61,7 @@ const formSchema = z.object({
   timestamp: z.string().min(2, {
     message: "Data deve ser definida",
   }),
-  tagIds: z.array(z.number()),
+  tagIds: z.array(z.number()).optional(),
   categoryId: z.number(),
 });
 
@@ -67,10 +69,13 @@ export type UpdateExpense = z.infer<typeof formSchema>;
 
 export function UpdateDrawer({ initialValues }: { initialValues: Expense }) {
   const queryClient = useQueryClient();
+  const [open, setOpen] = useState<boolean>(false);
   const form = useForm<UpdateExpense>({
     resolver: zodResolver(formSchema),
     defaultValues: { ...initialValues, categoryId: initialValues.category_id },
   });
+
+  const { data: categories } = useSuspenseQuery(categoryOptions());
 
   const { mutate } = useUpdateExpenseMutation();
 
@@ -79,6 +84,7 @@ export function UpdateDrawer({ initialValues }: { initialValues: Expense }) {
       { expense: data, id: initialValues.id },
       {
         onSuccess: () => {
+          setOpen(false);
           queryClient.invalidateQueries({ queryKey: [getExpensesQueryKey] });
         },
       }
@@ -86,7 +92,7 @@ export function UpdateDrawer({ initialValues }: { initialValues: Expense }) {
   }
 
   return (
-    <Drawer>
+    <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
         <Button variant="outline">Editar</Button>
       </DrawerTrigger>
@@ -164,15 +170,22 @@ export function UpdateDrawer({ initialValues }: { initialValues: Expense }) {
                     <FormControl>
                       <Select
                         value={String(field.value)}
-                        onValueChange={(value) => field.onChange(Number(value))}
+                        onValueChange={(value) => {
+                          field.onChange(Number(value));
+                        }}
                       >
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="Selecione a categoria" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="1">Light</SelectItem>
-                          <SelectItem value="2">Dark</SelectItem>
-                          <SelectItem value="3">System</SelectItem>
+                          {categories.map((category) => (
+                            <SelectItem
+                              value={String(category.id)}
+                              key={category.id}
+                            >
+                              <CategoryBadge category={category} />
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </FormControl>

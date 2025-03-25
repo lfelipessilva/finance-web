@@ -36,7 +36,9 @@ import {
   useBatchUpdateMutation,
 } from "@/mutations/expense";
 import { getExpensesQueryKey } from "@/queries/expenses";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { categoryOptions } from "@/queries/categories";
+import { CategoryBadge } from "@/components/ui/category-badge";
 
 const formSchema = z.object({
   name: z.string().optional(),
@@ -56,6 +58,8 @@ export const Floating = () => {
   const form = useForm<UpdateExpense>({
     resolver: zodResolver(formSchema),
   });
+
+  const { data: categories } = useSuspenseQuery(categoryOptions());
 
   const { mutate: batchUpdate } = useBatchUpdateMutation();
   const { mutate: batchDelete } = useBatchDeleteMutation();
@@ -164,15 +168,34 @@ export const Floating = () => {
                 <FormControl>
                   <Select
                     value={String(field.value)}
-                    onValueChange={(value) => field.onChange(Number(value))}
+                    onValueChange={(value) => {
+                      field.onChange(Number(value));
+                    }}
+                    defaultValue={undefined}
                   >
-                    <SelectTrigger className=" min-w-32 w-full bg-primary text-background border-0">
+                    <SelectTrigger className="w-full min-w-20">
                       <SelectValue placeholder="Selecione a categoria" />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1">Light</SelectItem>
-                      <SelectItem value="2">Dark</SelectItem>
-                      <SelectItem value="3">System</SelectItem>
+                    <SelectContent className="bg-foreground">
+                      {categories.map((category) => (
+                        <SelectItem
+                          value={String(category.id)}
+                          key={category.id}
+                          className="focus:bg-gray-500"
+                        >
+                          <CategoryBadge
+                            category={category}
+                            className="text-background"
+                          />
+                        </SelectItem>
+                      ))}
+                      <SelectItem
+                        className="text-background focus:bg-gray-500 focus:text-white"
+                        // @ts-expect-error @ts-ignore
+                        value={undefined}
+                      >
+                        Sem categoria
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </FormControl>

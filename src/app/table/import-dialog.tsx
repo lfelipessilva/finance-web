@@ -20,6 +20,7 @@ import { getExpensesQueryKey } from "@/queries/expenses";
 
 export function ImportDialog() {
   const [expenses, setExpenses] = useState<Omit<Expense, "id">[]>([]);
+  const [open, setOpen] = useState<boolean>(false);
   const { mutate } = useBatchCreateExpenses();
   const queryClient = useQueryClient();
 
@@ -29,6 +30,7 @@ export function ImportDialog() {
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: [getExpensesQueryKey] });
+          setOpen(false);
         },
       }
     );
@@ -57,7 +59,7 @@ export function ImportDialog() {
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
         <Button>Importar</Button>
       </DialogTrigger>
