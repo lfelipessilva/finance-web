@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import { getQueryClient } from "@/app/get-query-client";
 import { expenseOptions } from "@/queries/expenses";
@@ -7,6 +7,7 @@ import { ImportDialog } from "./import-dialog";
 import { Floating } from "./floating";
 import { tagOptions } from "@/queries/tags";
 import { categoryOptions } from "@/queries/categories";
+import { TableSkeleton } from "./table-skeleton";
 
 export default function Page() {
   const queryClient = getQueryClient();
@@ -20,7 +21,9 @@ export default function Page() {
       <h1 className="text-[32px] font-semibold">Finance</h1>
       <ImportDialog />
       <HydrationBoundary state={dehydrate(queryClient)}>
-        <DataTable />
+        <Suspense fallback={<TableSkeleton rows={50} columns={8} />}>
+          <DataTable />
+        </Suspense>
         <Floating />
       </HydrationBoundary>
     </main>
