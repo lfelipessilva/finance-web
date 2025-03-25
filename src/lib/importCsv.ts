@@ -1,5 +1,6 @@
 import { parse, format } from "date-fns";
 import { Expense } from "@/entity/expense";
+import { DATE_FORMAT } from "./contants";
 
 const POSSIBLE_COLUMN_NAMES = {
   timestamp: ["data", "date"],
@@ -9,7 +10,7 @@ const POSSIBLE_COLUMN_NAMES = {
 
 export const convertBrazilianDate = (dateString: string): string => {
   const parsedDate = parse(dateString, "dd/MM/yyyy", new Date());
-  return format(parsedDate, "yyyy-MM-dd'T'HH:mm:ss'Z'");
+  return format(parsedDate, DATE_FORMAT);
 };
 
 export const mapCSVHeaders = (headers: string[]): Record<string, number> => {
@@ -26,7 +27,10 @@ export const mapCSVHeaders = (headers: string[]): Record<string, number> => {
   return result;
 };
 
-export const defineIsBrazilianDate = (rows: string[][], columnIndex: number): boolean => {
+export const defineIsBrazilianDate = (
+  rows: string[][],
+  columnIndex: number
+): boolean => {
   return rows.some((row) => {
     const date = row[columnIndex];
     try {
@@ -53,7 +57,7 @@ export const parseTransactionRow = (
       case "timestamp":
         expense.timestamp = isBrazilianDate
           ? convertBrazilianDate(row[index])
-          : format(new Date(row[index]), "yyyy-MM-dd'T'HH:mm:ss'Z'");
+          : format(new Date(row[index]), DATE_FORMAT);
         break;
       case "value":
         expense.value = Number(row[index].replace(/\D/g, ""));
@@ -69,7 +73,12 @@ export const parseTransactionRow = (
 export const processCSVData = (results: string[][]): Omit<Expense, "id">[] => {
   const [headerRow, ...dataRows] = results;
   const headerOrder = mapCSVHeaders(headerRow);
-  const isBrazilianDate = defineIsBrazilianDate(dataRows, headerOrder["timestamp"]);
+  const isBrazilianDate = defineIsBrazilianDate(
+    dataRows,
+    headerOrder["timestamp"]
+  );
 
-  return dataRows.map((row) => parseTransactionRow(row, headerOrder, isBrazilianDate));
+  return dataRows.map((row) =>
+    parseTransactionRow(row, headerOrder, isBrazilianDate)
+  );
 };

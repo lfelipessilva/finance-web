@@ -40,13 +40,15 @@ import {
 } from "@/components/ui/select";
 import { useTableState } from "../state/table-state";
 import { Filter } from "./filter";
-import { cn } from "@/lib/utils";
+import { cn, paramsToObject } from "@/lib/utils";
+import { useSearchParams } from "next/navigation";
 
 export function DataTable() {
+  const searchParams = useSearchParams();
+  const filters = paramsToObject(searchParams);
   const [sorting, setSorting] = useState<SortingState>([
     { id: "timestamp", desc: true },
   ]);
-  const [filters, setFilters] = useState<ExpenseFilterState>({});
   const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: 0,
     pageSize: 50,
@@ -54,7 +56,7 @@ export function DataTable() {
   const { rowSelection, setRowSelection } = useTableState((state) => state);
 
   const { data: expenses } = useSuspenseQuery(
-    expenseOptions(pagination, sorting, filters)
+    expenseOptions(pagination, sorting, filters as ExpenseFilterState)
   );
 
   const table = useReactTable({
@@ -81,7 +83,7 @@ export function DataTable() {
 
   return (
     <div className="flex flex-col gap-4 py-4">
-      <Filter filters={filters} setFilters={setFilters} />
+      <Filter />
       <div className="rounded-md border">
         <Table className="w-full">
           <TableHeader>
@@ -134,8 +136,8 @@ export function DataTable() {
       </div>
       <div className="flex justify-between">
         <p className="text-sm">
-          {Object.keys(rowSelection).length} de{" "}
-          {expenses.summary.total} registros selecionados
+          {Object.keys(rowSelection).length} de {expenses.summary.total}{" "}
+          registros selecionados
         </p>
         <div className="flex gap-2">
           <Pagination>
