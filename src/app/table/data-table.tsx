@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { ExpenseFilterState, expenseOptions } from "@/queries/expenses";
 import {
@@ -84,7 +84,9 @@ export function DataTable() {
 
   return (
     <div className="flex flex-col gap-4 py-4">
-      <Filter />
+      <Suspense>
+        <Filter />
+      </Suspense>
       <div className="rounded-md border">
         <Table className="w-full">
           <TableHeader>
