@@ -1,6 +1,5 @@
 import { clsx, type ClassValue } from "clsx";
-import { endOfMonth, startOfMonth } from "date-fns";
-import { format } from "path";
+import { endOfMonth, format, startOfMonth } from "date-fns";
 import { twMerge } from "tailwind-merge";
 import { DATE_FORMAT } from "./contants";
 
