@@ -33,18 +33,18 @@ export const expenseOptions = (
     queryKey: [getExpensesQueryKey, params],
     queryFn: async () => {
       try {
-        const response = await api.get<DefaultPaginatedGetRequest<Expense>>(
-          "/expenses",
-          {
-            params,
-          }
-        );
+        const response = await api.get<
+          DefaultPaginatedGetRequest<Expense> & { sum: number }
+        >("/expenses", {
+          params,
+        });
 
         return response.data;
       } catch (error) {
         console.error(error);
         return {
           data: [],
+          sum: 0,
           summary: {
             page: 1,
             page_size: 50,

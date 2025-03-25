@@ -19,6 +19,7 @@ import {
   TableHeader,
   TableRow,
   TableCell,
+  TableFooter,
 } from "@/components/ui/table";
 import {
   Pagination,
@@ -61,7 +62,7 @@ export function DataTable() {
 
   const table = useReactTable({
     data: expenses.data,
-    columns,
+    columns: columns({ sum: expenses.sum }),
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -132,6 +133,22 @@ export function DataTable() {
               </TableRow>
             )}
           </TableBody>
+          <TableFooter>
+            {table.getFooterGroups().map((footerGroup) => (
+              <TableRow key={footerGroup.id}>
+                {footerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.footer,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableFooter>
         </Table>
       </div>
       <div className="flex justify-between">
