@@ -103,8 +103,8 @@ const MonthFilter = () => {
     timestamp_start &&
       timestamp_end &&
       getMonth(timestamp_start) === getMonth(timestamp_end)
-      ? getMonth(timestamp_start) + 1
-      : new Date().getMonth()
+      ? getMonth(timestamp_start) + 2
+      : new Date().getMonth() + 1
   );
 
   useEffect(() => {
