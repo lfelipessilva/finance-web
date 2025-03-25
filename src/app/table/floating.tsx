@@ -192,7 +192,7 @@ export const Floating = () => {
                       <SelectItem
                         className="text-background focus:bg-gray-500 focus:text-white"
                         // @ts-expect-error @ts-ignore
-                        value={undefined}
+                        value={null}
                       >
                         Sem categoria
                       </SelectItem>

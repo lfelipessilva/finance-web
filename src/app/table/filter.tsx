@@ -109,7 +109,7 @@ const MonthFilter = () => {
 
   useEffect(() => {
     updateFilter({
-      ...getStartAndEndOfMonth(selectedMonth),
+      ...getStartAndEndOfMonth(selectedMonth && selectedMonth - 1),
     });
   }, [selectedMonth]);
 
@@ -129,6 +129,8 @@ const MonthFilter = () => {
               {month.label}
             </SelectItem>
           ))}
+          {/* @ts-expect-error @ts-ignore */}
+          <SelectItem value={null}>Sem filtro</SelectItem>
         </SelectGroup>
       </SelectContent>
     </Select>

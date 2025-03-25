@@ -15,7 +15,12 @@ export function paramsToObject(searchParams: URLSearchParams) {
   return obj;
 }
 
-export const getStartAndEndOfMonth = (month: number) => {
+export const getStartAndEndOfMonth = (month?: number) => {
+  if (!month)
+    return {
+      timestamp_start: null,
+      timestamp_end: null,
+    };
   const year = new Date().getFullYear();
 
   return {
