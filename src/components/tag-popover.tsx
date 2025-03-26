@@ -57,6 +57,7 @@ export function TagPopover({ currentTags, id }: TagPopoverProps) {
       {currentTags.map((tag) => (
         <TagBadge
           key={tag.id}
+          isDelete
           tag={tag}
           onClick={() => handleTagChange(tag.id, true)}
         />

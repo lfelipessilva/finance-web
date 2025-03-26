@@ -7,6 +7,15 @@ import {
   Settings,
   User,
   Wrench,
+  ShoppingCart,
+  Pizza,
+  ReceiptText,
+  Clapperboard,
+  Plane,
+  Shirt,
+  BookOpen,
+  TriangleAlert,
+  HandHeart
 } from "lucide-react";
 
 const icons: Record<string, React.ElementType> = {
@@ -18,6 +27,15 @@ const icons: Record<string, React.ElementType> = {
   Wrench,
   Car,
   User,
+  ShoppingCart,
+  Pizza,
+  ReceiptText,
+  Clapperboard,
+  Plane,
+  Shirt,
+  BookOpen,
+  TriangleAlert,
+  HandHeart
 };
 
 const IconRenderer = ({

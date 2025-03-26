@@ -22,7 +22,6 @@ import { Expense } from "@/entity/expense";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -101,7 +100,7 @@ export function UpdateDrawer({ initialValues }: { initialValues: Expense }) {
           <DrawerHeader>
             <DrawerTitle>Atualizar gasto</DrawerTitle>
             <DrawerDescription>
-              Atualize o nome, valor, categoria ou horário do seu gasto
+              Atualiza todos os dados do seu gasto
             </DrawerDescription>
           </DrawerHeader>
           <Form {...form}>
@@ -116,9 +115,8 @@ export function UpdateDrawer({ initialValues }: { initialValues: Expense }) {
                   <FormItem>
                     <FormLabel>Nome</FormLabel>
                     <FormControl>
-                      <Input placeholder="nome" {...field} />
+                      <Input placeholder="Nome do gasto" {...field} />
                     </FormControl>
-                    <FormDescription>Nome do seu gasto</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -131,9 +129,8 @@ export function UpdateDrawer({ initialValues }: { initialValues: Expense }) {
                   <FormItem>
                     <FormLabel>Descrição</FormLabel>
                     <FormControl>
-                      <Input placeholder="description" {...field} />
+                      <Input placeholder="Descrição do gasto" {...field} />
                     </FormControl>
-                    <FormDescription>Descrição do seu gasto</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -155,7 +152,6 @@ export function UpdateDrawer({ initialValues }: { initialValues: Expense }) {
                         }
                       />
                     </FormControl>
-                    <FormDescription>Valor do seu gasto</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -189,9 +185,6 @@ export function UpdateDrawer({ initialValues }: { initialValues: Expense }) {
                         </SelectContent>
                       </Select>
                     </FormControl>
-                    <FormDescription>
-                      Essa é a categoria do seu gasto
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -202,7 +195,7 @@ export function UpdateDrawer({ initialValues }: { initialValues: Expense }) {
                 name="timestamp"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Horário</FormLabel>
+                    <FormLabel>Data</FormLabel>
                     <Popover modal>
                       <PopoverTrigger asChild>
                         <FormControl>
@@ -239,9 +232,6 @@ export function UpdateDrawer({ initialValues }: { initialValues: Expense }) {
                         />
                       </PopoverContent>
                     </Popover>
-                    <FormDescription>
-                      Esse é o horário do seu gasto
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
