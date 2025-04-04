@@ -1,7 +1,7 @@
 import { api } from "@/api/axios";
 import { queryOptions } from "@tanstack/react-query";
 import { DefaultPaginatedGetRequest } from "./type";
-import { Expense } from "@/entity/expense";
+import { Expense, ExpenseGroupByCategory } from "@/entity/expense";
 import { PaginationState, SortingState } from "@tanstack/react-table";
 
 export interface ExpenseFilterState {
@@ -50,6 +50,39 @@ export const expenseOptions = (
             page_size: 50,
             total: 0,
           },
+        };
+      }
+    },
+    retry: 2,
+  });
+};
+
+export const getExpensesByCategoryQueryKey = "expenses-by-category";
+
+export const expenseByCategoryOptions = (filters?: ExpenseFilterState) => {
+  const params = {
+    timestamp_start: filters?.timestamp_start ?? undefined,
+    timestamp_end: filters?.timestamp_end ?? undefined,
+    name: filters?.name ?? undefined,
+    category: filters?.category ?? undefined,
+  };
+
+  return queryOptions({
+    queryKey: [getExpensesQueryKey, params],
+    queryFn: async () => {
+      try {
+        const response = await api.get<{ data: ExpenseGroupByCategory[] }>(
+          "/expenses/category",
+          {
+            params,
+          }
+        );
+
+        return response.data;
+      } catch (error) {
+        console.error(error);
+        return {
+          data: [],
         };
       }
     },

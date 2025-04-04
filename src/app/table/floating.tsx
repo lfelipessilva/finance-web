@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useTableState } from "../state/table-state";
+import { useTableState } from "../../state/table-state";
 import { CalendarIcon, Trash } from "lucide-react";
 import { useForm } from "react-hook-form";
 import {

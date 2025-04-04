@@ -39,7 +39,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useTableState } from "../state/table-state";
+import { useTableState } from "../../state/table-state";
 import { Filter } from "./filter";
 import { cn, paramsToObject } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";

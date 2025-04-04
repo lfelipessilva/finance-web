@@ -13,3 +13,10 @@ export interface Expense {
   tags: Tag[];
   timestamp: string;
 }
+
+export type ExpenseGroupByCategory = {
+  category_id: number;
+  category_name: string;
+  category_color: string;
+  total_amount: number;
+};
