@@ -112,7 +112,6 @@ export const columns = ({ sum }: { sum: number }): ColumnDef<Expense>[] => {
           currency: "BRL",
         }),
     },
-
     {
       accessorKey: "card",
       header: "Cartão",

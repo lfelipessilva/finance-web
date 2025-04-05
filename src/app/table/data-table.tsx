@@ -43,13 +43,21 @@ import { cn } from "@/lib/utils";
 import { parseAsString, useQueryStates } from "nuqs";
 import { usePaginationSearchParams } from "@/lib/search-params.pagination";
 import { useSortingSearchParams } from "@/lib/search-params.sorting";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { ChevronDown } from "lucide-react";
 
 export function DataTable() {
   const [filters] = useQueryStates({
     timestamp_start: parseAsString,
     timestamp_end: parseAsString,
     name: parseAsString,
-    category_id: parseAsString,
+    category: parseAsString,
   });
   const [pagination, setPagination] = usePaginationSearchParams();
   const [sorting, setSorting] = useSortingSearchParams();
@@ -75,6 +83,12 @@ export function DataTable() {
     onPaginationChange: setPagination,
     onSortingChange: setSorting,
     rowCount: expenses.summary.total,
+    initialState: {
+      columnVisibility: {
+        bank: false,
+        card: false,
+      },
+    },
     state: {
       rowSelection,
       pagination,
@@ -85,6 +99,30 @@ export function DataTable() {
   return (
     <div className="flex flex-col gap-4 py-4">
       <Filter />
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" className="ml-auto">
+            Colunas <ChevronDown />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          {table
+            .getAllColumns()
+            .filter((column) => column.getCanHide())
+            .map((column) => {
+              return (
+                <DropdownMenuCheckboxItem
+                  key={column.id}
+                  className="capitalize"
+                  checked={column.getIsVisible()}
+                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                >
+                  {column.id}
+                </DropdownMenuCheckboxItem>
+              );
+            })}
+        </DropdownMenuContent>
+      </DropdownMenu>
 
       <div className="rounded-md border">
         <Table className="w-full">

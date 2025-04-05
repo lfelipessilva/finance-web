@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { processCSVData } from "@/lib/importCsv";
+import { processCSVData } from "@/lib/import-csv";
 import { Expense } from "@/entity/expense";
 import { ImportTable } from "@/components/tables/import-table";
 import { useBatchCreateExpenses } from "@/mutations/expense";

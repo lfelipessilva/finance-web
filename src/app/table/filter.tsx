@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ExpenseFilterState } from "@/queries/expenses";
-import { endOfDay, format } from "date-fns";
+import { endOfDay, format, startOfDay } from "date-fns";
 import { cn } from "@/lib/utils";
 import { categoryOptions } from "@/queries/categories";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -90,7 +90,7 @@ const Filter = () => {
             onSelect={(date: Date | undefined) => {
               if (!date) setTimestamp_start("");
               setTimestamp_start(
-                format(endOfDay(date!), "yyyy-MM-dd'T'HH:mm:ss'Z'")
+                format(startOfDay(date!), "yyyy-MM-dd'T'HH:mm:ss'Z'")
               );
             }}
             initialFocus
