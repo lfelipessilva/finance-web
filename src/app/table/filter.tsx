@@ -3,22 +3,26 @@ import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useEffect, useState } from "react";
 import { ExpenseFilterState } from "@/queries/expenses";
-import { useSearchParams } from "next/navigation";
-import { useDebounce } from "@/hooks/use-debounde";
-import { monthOptions } from "@/lib/contants";
-import { getMonth } from "date-fns";
-import { getStartAndEndOfMonth } from "@/lib/utils";
+import { endOfDay, format } from "date-fns";
+import { cn } from "@/lib/utils";
 import { categoryOptions } from "@/queries/categories";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { CategoryBadge } from "@/components/ui/category-badge";
+import { useQueryState } from "nuqs";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { ptBR } from "date-fns/locale";
 
 export interface FilterProps {
   filters: ExpenseFilterState;
@@ -26,129 +30,106 @@ export interface FilterProps {
 }
 
 const Filter = () => {
+  const [category, setCategory] = useQueryState("category");
+  const [name, setName] = useQueryState("name");
+  const [timestamp_start, setTimestamp_start] =
+    useQueryState("timestamp_start");
+  const [timestamp_end, setTimestamp_end] = useQueryState("timestamp_end");
+
+  const { data: categories } = useSuspenseQuery(categoryOptions());
+
   return (
     <section className="flex gap-4">
-      <NameFilter />
-      <CategoryFilter />
-      <MonthFilter />
-    </section>
-  );
-};
+      <Input
+        placeholder="Filtrar nome"
+        value={name ?? undefined}
+        onChange={({ target: { value } }) => setName(value)}
+      />
 
-const CategoryFilter = () => {
-  const searchParams = useSearchParams();
-  const { data: categories } = useSuspenseQuery(categoryOptions());
-  const [category, setCategory] = useState<string | undefined>(
-    searchParams.get("category") || undefined
-  );
-
-  useEffect(() => {
-    updateFilter({
-      category: category as string,
-    });
-  }, [category]);
-
-  return (
-    <Select
-      value={category}
-      onValueChange={(value) => {
-        setCategory(value);
-      }}
-      defaultValue={undefined}
-    >
-      <SelectTrigger className="w-full min-w-20">
-        <SelectValue placeholder="Selecione a categoria" />
-      </SelectTrigger>
-      <SelectContent>
-        {categories.map((category) => (
-          <SelectItem value={String(category.id)} key={category.id}>
-            <CategoryBadge category={category} />
-          </SelectItem>
-        ))}
-        {/* @ts-expect-error @ts-ignore */}
-        <SelectItem value={null}>Sem categoria</SelectItem>
-      </SelectContent>
-    </Select>
-  );
-};
-
-const NameFilter = () => {
-  const searchParams = useSearchParams();
-  const [name, setName] = useState<string | undefined>(
-    searchParams.get("name") || undefined
-  );
-  const debouncedName = useDebounce(name, 300);
-
-  useEffect(() => {
-    updateFilter({
-      name: debouncedName as string,
-    });
-  }, [debouncedName]);
-
-  return (
-    <Input
-      placeholder="Filtrar nome"
-      value={name}
-      onChange={({ target: { value } }) => setName(value)}
-    />
-  );
-};
-
-const MonthFilter = () => {
-  const searchParams = useSearchParams();
-  const timestamp_start = searchParams.get("timestamp_start");
-  const timestamp_end = searchParams.get("timestamp_start");
-
-  const [selectedMonth, setSelectedMonth] = useState<number>(
-    timestamp_start &&
-      timestamp_end &&
-      getMonth(timestamp_start) === getMonth(timestamp_end)
-      ? getMonth(timestamp_start) + 2
-      : new Date().getMonth() + 1
-  );
-
-  useEffect(() => {
-    updateFilter({
-      ...getStartAndEndOfMonth(selectedMonth && selectedMonth - 1),
-    });
-  }, [selectedMonth]);
-
-  return (
-    <Select
-      value={String(selectedMonth)}
-      onValueChange={(value) => setSelectedMonth(Number(value))}
-    >
-      <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder="Selecione" />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectGroup>
-          <SelectLabel>Mês</SelectLabel>
-          {monthOptions.map((month) => (
-            <SelectItem key={month.value} value={month.value}>
-              {month.label}
+      <Select
+        value={category ?? undefined}
+        onValueChange={(value) => {
+          setCategory(value);
+        }}
+        defaultValue={undefined}
+      >
+        <SelectTrigger className="w-full min-w-20">
+          <SelectValue placeholder="Selecione a categoria" />
+        </SelectTrigger>
+        <SelectContent>
+          {categories.map((category) => (
+            <SelectItem value={String(category.id)} key={category.id}>
+              <CategoryBadge category={category} />
             </SelectItem>
           ))}
           {/* @ts-expect-error @ts-ignore */}
-          <SelectItem value={null}>Sem filtro</SelectItem>
-        </SelectGroup>
-      </SelectContent>
-    </Select>
+          <SelectItem value={null}>Sem categoria</SelectItem>
+        </SelectContent>
+      </Select>
+      <Popover modal>
+        <PopoverTrigger asChild>
+          <Button
+            variant={"outline"}
+            className={cn(
+              "pl-3 text-left font-normal",
+              !timestamp_start && "text-muted-foreground"
+            )}
+          >
+            {timestamp_start ? (
+              format(timestamp_start, "PPP", { locale: ptBR })
+            ) : (
+              <span>Seleciona uma data</span>
+            )}
+            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="start">
+          <Calendar
+            mode="single"
+            selected={timestamp_start ? new Date(timestamp_start) : undefined}
+            onSelect={(date: Date | undefined) => {
+              if (!date) setTimestamp_start("");
+              setTimestamp_start(
+                format(endOfDay(date!), "yyyy-MM-dd'T'HH:mm:ss'Z'")
+              );
+            }}
+            initialFocus
+          />
+        </PopoverContent>
+      </Popover>
+      <Popover modal>
+        <PopoverTrigger asChild>
+          <Button
+            variant={"outline"}
+            className={cn(
+              "pl-3 text-left font-normal",
+              !timestamp_end && "text-muted-foreground"
+            )}
+          >
+            {timestamp_end ? (
+              format(timestamp_end, "PPP", { locale: ptBR })
+            ) : (
+              <span>Seleciona uma data</span>
+            )}
+            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="start">
+          <Calendar
+            mode="single"
+            selected={timestamp_end ? new Date(timestamp_end) : undefined}
+            onSelect={(date: Date | undefined) => {
+              if (!date) setTimestamp_end("");
+              setTimestamp_end(
+                format(endOfDay(date!), "yyyy-MM-dd'T'HH:mm:ss'Z'")
+              );
+            }}
+            initialFocus
+          />
+        </PopoverContent>
+      </Popover>
+    </section>
   );
-};
-
-const updateFilter = (filter: Record<string, string | null>) => {
-  const params = new URLSearchParams(window.location.search.toString());
-
-  Object.entries(filter).forEach(([key, value]) => {
-    if (value) {
-      params.set(key, value);
-    } else {
-      params.delete(key);
-    }
-  });
-
-  window.history.pushState(null, "", `?${params.toString()}`);
 };
 
 export { Filter };

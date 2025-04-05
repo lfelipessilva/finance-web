@@ -5,10 +5,7 @@ import {
   expenseByCategoryOptions,
   expenseByDayOptions,
 } from "@/queries/expenses";
-import { Chart } from "./by-category";
 import { ByDay } from "./by-day";
-import { ByMonth } from "./by-month";
-import { ByYear } from "./by-year";
 
 export default function Page() {
   const queryClient = getQueryClient();
@@ -20,10 +17,10 @@ export default function Page() {
     <main className="w-10/12 max-w-[1440px] m-auto my-8">
       <h1 className="text-[32px] font-semibold">Finance</h1>
       <HydrationBoundary state={dehydrate(queryClient)}>
-        <Chart />
+        {/* <Chart /> */}
         <ByDay />
-        <ByMonth />
-        <ByYear />
+        {/* <ByMonth />
+        <ByYear /> */}
       </HydrationBoundary>
     </main>
   );

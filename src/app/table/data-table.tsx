@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { ExpenseFilterState, expenseOptions } from "@/queries/expenses";
 import {
@@ -8,8 +8,6 @@ import {
   getCoreRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  PaginationState,
-  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import {
@@ -41,19 +39,21 @@ import {
 } from "@/components/ui/select";
 import { useTableState } from "../../state/table-state";
 import { Filter } from "./filter";
-import { cn, paramsToObject } from "@/lib/utils";
-import { useSearchParams } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { parseAsString, useQueryStates } from "nuqs";
+import { usePaginationSearchParams } from "@/lib/search-params.pagination";
+import { useSortingSearchParams } from "@/lib/search-params.sorting";
 
 export function DataTable() {
-  const searchParams = useSearchParams();
-  const filters = paramsToObject(searchParams);
-  const [sorting, setSorting] = useState<SortingState>([
-    { id: "timestamp", desc: true },
-  ]);
-  const [pagination, setPagination] = React.useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 50,
+  const [filters] = useQueryStates({
+    timestamp_start: parseAsString,
+    timestamp_end: parseAsString,
+    name: parseAsString,
+    category_id: parseAsString,
   });
+  const [pagination, setPagination] = usePaginationSearchParams();
+  const [sorting, setSorting] = useSortingSearchParams();
+
   const { rowSelection, setRowSelection } = useTableState((state) => state);
 
   const { data: expenses } = useSuspenseQuery(
