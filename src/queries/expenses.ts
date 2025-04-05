@@ -1,7 +1,11 @@
 import { api } from "@/api/axios";
 import { queryOptions } from "@tanstack/react-query";
 import { DefaultPaginatedGetRequest } from "./type";
-import { Expense, ExpenseGroupByCategory } from "@/entity/expense";
+import {
+  Expense,
+  ExpenseGroupByCategory,
+  ExpenseGroupByDate,
+} from "@/entity/expense";
 import { PaginationState, SortingState } from "@tanstack/react-table";
 
 export interface ExpenseFilterState {
@@ -73,6 +77,105 @@ export const expenseByCategoryOptions = (filters?: ExpenseFilterState) => {
       try {
         const response = await api.get<{ data: ExpenseGroupByCategory[] }>(
           "/expenses/category",
+          {
+            params,
+          }
+        );
+
+        return response.data;
+      } catch (error) {
+        console.error(error);
+        return {
+          data: [],
+        };
+      }
+    },
+    retry: 2,
+  });
+};
+
+export const getExpensesByDayQueryKey = "expenses-by-day";
+
+export const expenseByDayOptions = (filters?: ExpenseFilterState) => {
+  const params = {
+    timestamp_start: filters?.timestamp_start ?? undefined,
+    timestamp_end: filters?.timestamp_end ?? undefined,
+    name: filters?.name ?? undefined,
+    category: filters?.category ?? undefined,
+  };
+
+  return queryOptions({
+    queryKey: [getExpensesByDayQueryKey, params],
+    queryFn: async () => {
+      try {
+        const response = await api.get<{ data: ExpenseGroupByDate[] }>(
+          "/expenses/day",
+          {
+            params,
+          }
+        );
+
+        return response.data;
+      } catch (error) {
+        console.error(error);
+        return {
+          data: [],
+        };
+      }
+    },
+    retry: 2,
+  });
+};
+
+export const getExpensesByMonthQueryKey = "expenses-by-month";
+
+export const expenseByMonthOptions = (filters?: ExpenseFilterState) => {
+  const params = {
+    timestamp_start: filters?.timestamp_start ?? undefined,
+    timestamp_end: filters?.timestamp_end ?? undefined,
+    name: filters?.name ?? undefined,
+    category: filters?.category ?? undefined,
+  };
+
+  return queryOptions({
+    queryKey: [getExpensesByMonthQueryKey, params],
+    queryFn: async () => {
+      try {
+        const response = await api.get<{ data: ExpenseGroupByDate[] }>(
+          "/expenses/month",
+          {
+            params,
+          }
+        );
+
+        return response.data;
+      } catch (error) {
+        console.error(error);
+        return {
+          data: [],
+        };
+      }
+    },
+    retry: 2,
+  });
+};
+
+export const getExpensesByYearQueryKey = "expenses-by-year";
+
+export const expenseByYearOptions = (filters?: ExpenseFilterState) => {
+  const params = {
+    timestamp_start: filters?.timestamp_start ?? undefined,
+    timestamp_end: filters?.timestamp_end ?? undefined,
+    name: filters?.name ?? undefined,
+    category: filters?.category ?? undefined,
+  };
+
+  return queryOptions({
+    queryKey: [getExpensesByYearQueryKey, params],
+    queryFn: async () => {
+      try {
+        const response = await api.get<{ data: ExpenseGroupByDate[] }>(
+          "/expenses/year",
           {
             params,
           }

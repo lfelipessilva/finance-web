@@ -14,9 +14,15 @@ export interface Expense {
   timestamp: string;
 }
 
+export type ExpenseGroupByDate = {
+  timestamp: number;
+  total_value: string;
+};
+
+
 export type ExpenseGroupByCategory = {
   category_id: number;
   category_name: string;
   category_color: string;
-  total_amount: number;
+  total_value: number;
 };
