@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import { getQueryClient } from "@/app/get-query-client";
 import {
@@ -17,10 +17,9 @@ export default function Page() {
     <main className="w-10/12 max-w-[1440px] m-auto my-8">
       <h1 className="text-[32px] font-semibold">Finance</h1>
       <HydrationBoundary state={dehydrate(queryClient)}>
-        {/* <Chart /> */}
-        <ByDay />
-        {/* <ByMonth />
-        <ByYear /> */}
+        <Suspense fallback={null}>
+          <ByDay />
+        </Suspense>
       </HydrationBoundary>
     </main>
   );
