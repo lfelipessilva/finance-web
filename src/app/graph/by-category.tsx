@@ -31,14 +31,14 @@ export function Chart() {
         />
         <Pie
           data={groups.data}
-          dataKey="total_amount"
+          dataKey="total_value"
           nameKey="category_name"
           innerRadius={0}
           outerRadius={300}
           strokeWidth={5}
           onMouseEnter={(_, index) => setActiveIndex(index)}
           onMouseLeave={() => setActiveIndex(null)}
-          activeIndex={activeIndex}
+          activeIndex={activeIndex ?? undefined}
           activeShape={({ outerRadius = 0, ...props }: PieSectorDataItem) => (
             <Sector {...props} outerRadius={outerRadius * 1.1} opacity={1} />
           )}
