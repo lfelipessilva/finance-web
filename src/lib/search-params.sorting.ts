@@ -18,8 +18,9 @@ const sortParser = createParser<ColumnSort>({
   eq: (a, b) => JSON.stringify(a) === JSON.stringify(b),
 });
 
-const parseAsSortingState = parseAsArrayOf(sortParser).withDefault([]);
+const parseAsSortingState = (defaultQuery: ColumnSort[]) =>
+  parseAsArrayOf(sortParser).withDefault(defaultQuery);
 
-export function useSortingSearchParams(key = "orderBy") {
-  return useQueryState(key, parseAsSortingState);
+export function useSortingSearchParams(defaultQuery?: ColumnSort[]) {
+  return useQueryState("orderBy", parseAsSortingState(defaultQuery ?? []));
 }

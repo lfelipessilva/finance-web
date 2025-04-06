@@ -60,7 +60,7 @@ export function DataTable() {
     category: parseAsString,
   });
   const [pagination, setPagination] = usePaginationSearchParams();
-  const [sorting, setSorting] = useSortingSearchParams();
+  const [sorting, setSorting] = useSortingSearchParams([{ id: 'timestamp', desc: true }]);
 
   const { rowSelection, setRowSelection } = useTableState((state) => state);
 
@@ -135,9 +135,9 @@ export function DataTable() {
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   );
                 })}
@@ -180,9 +180,9 @@ export function DataTable() {
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                          header.column.columnDef.footer,
-                          header.getContext()
-                        )}
+                        header.column.columnDef.footer,
+                        header.getContext()
+                      )}
                   </TableHead>
                 ))}
               </TableRow>
@@ -203,7 +203,7 @@ export function DataTable() {
                   onClick={() => table.previousPage()}
                   className={cn(
                     !table.getCanPreviousPage() &&
-                      "cursor-auto pointer-events-none opacity-50"
+                    "cursor-auto pointer-events-none opacity-50"
                   )}
                 />
               </PaginationItem>
